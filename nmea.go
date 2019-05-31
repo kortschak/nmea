@@ -6,9 +6,9 @@ package nmea
 
 import (
 	"errors"
-	"fmt"
 	"math"
 	"reflect"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -23,6 +23,7 @@ var (
 	errType        = errors.New("nmea: wrong type for method")
 	errLateType    = errors.New("nmea: late type field")
 	errMissingType = errors.New("nmea: missing type field")
+	errTypeSyntax  = errors.New("nmea: bad syntax for type match")
 )
 
 // ParseTo parses a raw NMEA 0183 sentence and fills the fields of dst with the
@@ -47,7 +48,6 @@ func ParseTo(dst interface{}, sentence string) error {
 		}
 		sentence = sentence[:sumMarkIdx]
 		if checksum(sentence) != wantSum {
-			fmt.Printf("%x\n", checksum(sentence))
 			return errChecksum
 		}
 		sum = wantSum
@@ -77,7 +77,18 @@ func ParseTo(dst interface{}, sentence string) error {
 			if i != 0 {
 				return errLateType
 			}
-			if tag != fields[i] {
+			if tag[0] == '/' {
+				if tag[len(tag)-1] != '/' {
+					return errTypeSyntax
+				}
+				re, err := regexp.Compile(tag[1 : len(tag)-1])
+				if err != nil {
+					return errTypeSyntax
+				}
+				if !re.MatchString(fields[i]) {
+					return errType
+				}
+			} else if tag != fields[i] {
 				return errType
 			}
 			hasType = true
@@ -238,7 +249,7 @@ func setString(dst reflect.Value, field string) error {
 	case reflect.String:
 		dst.SetString(field)
 	case reflect.Slice:
-		if dst.Elem().Kind() != reflect.Uint8 {
+		if dst.Type().Elem().Kind() != reflect.Uint8 {
 			return errType
 		}
 		dst.SetBytes([]byte(field))

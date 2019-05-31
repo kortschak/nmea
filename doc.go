@@ -8,8 +8,9 @@
 // and fills fields of a struct with sequential values according to methods
 // specified in field tags with the name "nmea". A destination struct must have
 // an initial field with the name Type and a struct tag `nmea:"type"` where type
-// is the type of the NMEA sentence. If the Type field is a string, the type will
-// be stored in the field.
+// is the type of the NMEA sentence or a regexp matching the sentence type if it
+// is quoted in //. If the Type field is a string, the type will be stored in the
+// field.
 //
 // Parsing methods that are available are:
 //

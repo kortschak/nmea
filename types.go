@@ -395,3 +395,56 @@ type LIB struct {
 
 	Checksum byte `nmea:"checksum"`
 }
+
+// https://www.trimble.com/oem_receiverhelp/v4.44/en/NMEA-0183messages_GNS.html
+type GNS struct {
+	Type string `nmea:"/G[NPL]GNS/"`
+
+	Timestamp  time.Time `nmea:"time"`
+	Latitude   float64   `nmea:"latlon"`
+	NorthSouth string    `nmea:"string"`
+	Longitude  float64   `nmea:"latlon"`
+	EastWest   string    `nmea:"string"`
+
+	Mode       string `nmea:"string"`
+	Satellites int    `nmea:"number"`
+
+	HDOP       float64 `nmea:"number"`
+	Altitude   float64 `nmea:"number"`
+	Separation float64 `nmea:"number"`
+
+	Age float64 `nmea:"number"`
+
+	ReferenceStation uint16 `nmea:"number"`
+
+	Checksum byte `nmea:"checksum"`
+}
+
+// http://www.nuovamarea.net/pytheas_9.html
+type THS struct {
+	Type string `nmea:"/..THS/"`
+
+	Heading float64 `nmea:"number"`
+	Status  string  `nmea:"string"`
+
+	Checksum byte `nmea:"checksum"`
+}
+
+// TODO(kortschak): Complete implementation of VDM/VDO
+
+// https://gpsd.gitlab.io/gpsd/AIVDM.html
+type VDMVDO struct {
+	Type string `nmea:"/..VD[MO]/"`
+
+	Fragments      int `nmea:"number"`
+	FragmentNumber int `nmea:"number"`
+
+	MessageID string `nmea:"string"`
+
+	ChannelCode string `nmea:"string"`
+
+	Data    string `nmea:"string"`
+	Padding byte   `nmea:"number"`
+
+	Checksum byte `nmea:"checksum"`
+}
