@@ -19,6 +19,7 @@ var parseTests = []struct {
 		sentence: "$GPBOD,099.3,T,105.6,M,POINTB,*48",
 		dst:      &BOD{},
 		want: &BOD{
+			Type:        "GPBOD",
 			True:        99.3,
 			Magnetic:    105.6,
 			Destination: "POINTB",
@@ -29,6 +30,7 @@ var parseTests = []struct {
 		sentence: "$GPBOD,097.0,T,103.2,M,POINTB,POINTA*4A",
 		dst:      &BOD{},
 		want: &BOD{
+			Type:        "GPBOD",
 			True:        97,
 			Magnetic:    103.2,
 			Destination: "POINTB",
@@ -40,6 +42,7 @@ var parseTests = []struct {
 		sentence: "$GPBWC,081837,,,,,,T,,M,,N,*13",
 		dst:      &BWC{},
 		want: &BWC{
+			Type:      "GPBWC",
 			Timestamp: time.Date(0, 1, 1, 8, 18, 37, 0, time.UTC),
 			RangeUnit: "N",
 			Checksum:  0x13,
@@ -49,6 +52,7 @@ var parseTests = []struct {
 		sentence: "$GPBWC,225444,4917.24,N,12309.57,W,051.9,T,031.6,M,001.3,N,004*29",
 		dst:      &BWC{},
 		want: &BWC{
+			Type:      "GPBWC",
 			Timestamp: time.Date(0, 1, 1, 22, 54, 44, 0, time.UTC),
 			Latitude:  49.28733333333333, NorthSouth: "N",
 			Longitude: 123.1595, EastWest: "W",
@@ -63,6 +67,7 @@ var parseTests = []struct {
 		sentence: "$GPBWC,220516,5130.02,N,00046.34,W,213.8,T,218.0,M,0004.6,N,EGLM*21",
 		dst:      &BWC{},
 		want: &BWC{
+			Type:      "GPBWC",
 			Timestamp: time.Date(0, 1, 1, 22, 05, 16, 0, time.UTC),
 			Latitude:  51.50033333333334, NorthSouth: "N",
 			Longitude: 0.7723333333333334, EastWest: "W",
@@ -77,6 +82,7 @@ var parseTests = []struct {
 		sentence: "$GPGLL,5300.97914,N,00259.98174,E,125926,A*28",
 		dst:      &GLL{},
 		want: &GLL{
+			Type:     "GPGLL",
 			Latitude: 53.01631900000001, NorthSouth: "N",
 			Longitude: 2.9996956666666668, EastWest: "E",
 			Timestamp: time.Date(0, 1, 1, 12, 59, 26, 0, time.UTC),
@@ -87,6 +93,7 @@ var parseTests = []struct {
 		sentence: "$GPGLL,3751.65,S,14507.36,E*77",
 		dst:      &GLL{},
 		want: &GLL{
+			Type:     "GPGLL",
 			Latitude: 37.86083333333333, NorthSouth: "S",
 			Longitude: 145.12266666666667, EastWest: "E",
 			Checksum: 0x77,
@@ -96,6 +103,7 @@ var parseTests = []struct {
 		sentence: "$GPGLL,4916.45,N,12311.12,W,225444,A",
 		dst:      &GLL{},
 		want: &GLL{
+			Type:     "GPGLL",
 			Latitude: 49.27416666666666, NorthSouth: "N",
 			Longitude: 123.18533333333335, EastWest: "W",
 			Timestamp: time.Date(0, 1, 1, 22, 54, 44, 0, time.UTC),
@@ -105,6 +113,7 @@ var parseTests = []struct {
 		sentence: "$GPGSA,A,3,,,,,,16,18,,22,24,,,3.6,2.1,2.2*3C",
 		dst:      &GSA{},
 		want: &GSA{
+			Type:     "GPGSA",
 			Mode:     "A",
 			Fix:      3,
 			SV5:      "16",
@@ -121,6 +130,7 @@ var parseTests = []struct {
 		sentence: "$GPGSA,A,3,19,28,14,18,27,22,31,39,,,,,1.7,1.0,1.3*34",
 		dst:      &GSA{},
 		want: &GSA{
+			Type:     "GPGSA",
 			Mode:     "A",
 			Fix:      3,
 			SV0:      "19",
@@ -141,6 +151,7 @@ var parseTests = []struct {
 		sentence: "$GPGSV,3,1,11,03,03,111,00,04,15,270,00,06,01,010,00,13,06,292,00*74",
 		dst:      &GSV{},
 		want: &GSV{
+			Type:             "GPGSV",
 			Messages:         3,
 			MessageNumber:    1,
 			SatellitesInView: 11,
@@ -167,6 +178,7 @@ var parseTests = []struct {
 		sentence: "$GPGSV,3,2,11,14,25,170,00,16,57,208,39,18,67,296,40,19,40,246,00*74",
 		dst:      &GSV{},
 		want: &GSV{
+			Type:             "GPGSV",
 			Messages:         3,
 			MessageNumber:    2,
 			SatellitesInView: 11,
@@ -193,6 +205,7 @@ var parseTests = []struct {
 		sentence: "$GPGSV,3,3,11,22,42,067,42,24,14,311,43,27,05,244,00,,,,*4D",
 		dst:      &GSV{},
 		want: &GSV{
+			Type:             "GPGSV",
 			Messages:         3,
 			MessageNumber:    3,
 			SatellitesInView: 11,
@@ -215,6 +228,7 @@ var parseTests = []struct {
 		sentence: "$GPGSV,1,1,13,02,02,213,,03,-3,000,,11,00,121,,14,13,172,05*62",
 		dst:      &GSV{},
 		want: &GSV{
+			Type:             "GPGSV",
 			Messages:         1,
 			MessageNumber:    1,
 			SatellitesInView: 13,
@@ -241,6 +255,7 @@ var parseTests = []struct {
 		sentence: "$GPHDT,1,T*2A",
 		dst:      &HDT{},
 		want: &HDT{
+			Type:     "GPHDT",
 			Heading:  1,
 			Checksum: 0x2a,
 		},
@@ -249,6 +264,7 @@ var parseTests = []struct {
 		sentence: "$GPR00,EGLL,EGLM,EGTB,EGUB,EGTK,MBOT,EGTB,,,,,,,*58",
 		dst:      &R00{},
 		want: &R00{
+			Type:     "GPR00",
 			WP0:      "EGLL",
 			WP1:      "EGLM",
 			WP2:      "EGTB",
@@ -263,6 +279,7 @@ var parseTests = []struct {
 		sentence: "$GPR00,MINST,CHATN,CHAT1,CHATW,CHATM,CHATE,003,004,005,006,007,,,*05",
 		dst:      &R00{},
 		want: &R00{
+			Type:     "GPR00",
 			WP0:      "MINST",
 			WP1:      "CHATN",
 			WP2:      "CHAT1",
@@ -281,6 +298,7 @@ var parseTests = []struct {
 		sentence: "$GPRMA,A,1234.56,N,12345.67,W,,,12.3,123,12.3,W*6D",
 		dst:      &RMA{},
 		want: &RMA{
+			Type:     "GPRMA",
 			Status:   "A",
 			Latitude: 12.575999999999999, NorthSouth: "N",
 			Longitude: 123.76116666666667, EastWest: "W",
@@ -294,6 +312,7 @@ var parseTests = []struct {
 		sentence: "$GPRMB,A,0.66,L,003,004,4917.24,N,12309.57,W,001.3,052.5,000.5,V*20",
 		dst:      &RMB{},
 		want: &RMB{
+			Type:             "GPRMB",
 			Status:           "A",
 			CrosstrackError:  0.66,
 			CorrectDirection: "L",
@@ -312,6 +331,7 @@ var parseTests = []struct {
 		sentence: "$GPRMB,A,4.08,L,EGLL,EGLM,5130.02,N,00046.34,W,004.6,213.9,122.9,A*3D",
 		dst:      &RMB{},
 		want: &RMB{
+			Type:             "GPRMB",
 			Status:           "A",
 			CrosstrackError:  4.08,
 			CorrectDirection: "L",
@@ -330,6 +350,7 @@ var parseTests = []struct {
 		sentence: "$GPRMC,081836,A,3751.65,S,14507.36,E,000.0,360.0,130998,011.3,E*62",
 		dst:      &RMC{},
 		want: &RMC{
+			Type:     "GPRMC",
 			Time:     time.Date(0, 1, 1, 8, 18, 36, 0, time.UTC),
 			Status:   "A",
 			Latitude: 37.86083333333333, NorthSouth: "S",
@@ -345,6 +366,7 @@ var parseTests = []struct {
 		sentence: "$GPRMC,225446,A,4916.45,N,12311.12,W,000.5,054.7,191194,020.3,E*68",
 		dst:      &RMC{},
 		want: &RMC{
+			Type:     "GPRMC",
 			Time:     time.Date(0, 1, 1, 22, 54, 46, 0, time.UTC),
 			Status:   "A",
 			Latitude: 49.27416666666666, NorthSouth: "N",
@@ -360,6 +382,7 @@ var parseTests = []struct {
 		sentence: "$GPRMC,220516,A,5133.82,N,00042.24,W,173.8,231.8,130694,004.2,W*70",
 		dst:      &RMC{},
 		want: &RMC{
+			Type:     "GPRMC",
 			Time:     time.Date(0, 1, 1, 22, 05, 16, 0, time.UTC),
 			Status:   "A",
 			Latitude: 51.56366666666667, NorthSouth: "N",
@@ -375,6 +398,7 @@ var parseTests = []struct {
 		sentence: "$GPTRF,053220.03,051197,4916.45,N,12311.12,W,1.2,3.4,5.6,7.8,SAT",
 		dst:      &TRF{},
 		want: &TRF{
+			Type:     "GPTRF",
 			Time:     time.Date(0, 1, 1, 05, 32, 20, 30e6, time.UTC),
 			Date:     time.Date(1997, 11, 05, 0, 0, 0, 0, time.UTC),
 			Latitude: 49.27416666666666, NorthSouth: "N",
@@ -390,6 +414,7 @@ var parseTests = []struct {
 		sentence: "$GPSTN,3",
 		dst:      &STN{},
 		want: &STN{
+			Type:   "GPSTN",
 			Talker: 3,
 		},
 	},
@@ -397,6 +422,7 @@ var parseTests = []struct {
 		sentence: "$GPVBW,1.2,3.4,A,5.6,7.8,A",
 		dst:      &VBW{},
 		want: &VBW{
+			Type:                    "GPVBW",
 			LongitudinalWaterSpeed:  1.2,
 			TransverseWaterSpeed:    3.4,
 			WaterSpeedStatus:        "A",
@@ -409,6 +435,7 @@ var parseTests = []struct {
 		sentence: "$GPVTG,360.0,T,348.7,M,000.0,N,000.0,K*43",
 		dst:      &VTG{},
 		want: &VTG{
+			Type:          "GPVTG",
 			TrackTrue:     360,
 			TrackMagnetic: 348.7,
 			SpeedKnots:    0,
@@ -420,6 +447,7 @@ var parseTests = []struct {
 		sentence: "$GPVTG,054.7,T,034.4,M,005.5,N,010.2,K",
 		dst:      &VTG{},
 		want: &VTG{
+			Type:          "GPVTG",
 			TrackTrue:     54.7,
 			TrackMagnetic: 34.4,
 			SpeedKnots:    5.5,
@@ -430,6 +458,7 @@ var parseTests = []struct {
 		sentence: "$GPVTG,78.9,T,,,1.23,N,4.56,K*1C",
 		dst:      &VTG{},
 		want: &VTG{
+			Type:          "GPVTG",
 			TrackTrue:     78.9,
 			TrackMagnetic: 0,
 			SpeedKnots:    1.23,
@@ -441,6 +470,7 @@ var parseTests = []struct {
 		sentence: "$GPWPL,4917.16,N,12310.64,W,003*65",
 		dst:      &WPL{},
 		want: &WPL{
+			Type:     "GPWPL",
 			Latitude: 49.285999999999994, NorthSouth: "N",
 			Longitude: 123.17733333333332, EastWest: "W",
 			Waypoint: "003",
@@ -451,6 +481,7 @@ var parseTests = []struct {
 		sentence: "$GPWPL,5128.62,N,00027.58,W,EGLL*59",
 		dst:      &WPL{},
 		want: &WPL{
+			Type:     "GPWPL",
 			Latitude: 51.477000000000004, NorthSouth: "N",
 			Longitude: 0.4596666666666666, EastWest: "W",
 			Waypoint: "EGLL",
@@ -461,6 +492,7 @@ var parseTests = []struct {
 		sentence: "$GPXTE,A,A,0.67,L,N",
 		dst:      &XTE{},
 		want: &XTE{
+			Type:            "GPXTE",
 			GeneralWarning:  "A",
 			LockFlag:        "A",
 			CrossTrackError: 0.67,
@@ -472,6 +504,7 @@ var parseTests = []struct {
 		sentence: "$GPXTE,A,A,4.07,L,N*6D",
 		dst:      &XTE{},
 		want: &XTE{
+			Type:            "GPXTE",
 			GeneralWarning:  "A",
 			LockFlag:        "A",
 			CrossTrackError: 4.07,
@@ -484,6 +517,7 @@ var parseTests = []struct {
 		sentence: "$GPZDA,173958.45,01,05,1970,10,30",
 		dst:      &ZDA{},
 		want: &ZDA{
+			Type:            "GPZDA",
 			Time:            time.Date(0, 1, 1, 17, 39, 58, 450e6, time.UTC),
 			Day:             1,
 			Month:           5,
@@ -496,6 +530,7 @@ var parseTests = []struct {
 		sentence: "$PGRME,15.0,M,45.0,M,25.0,M*1C",
 		dst:      &RME{},
 		want: &RME{
+			Type:     "PGRME",
 			HPE:      15,
 			VPE:      45,
 			OSEPE:    25,
@@ -506,6 +541,7 @@ var parseTests = []struct {
 		sentence: "$PGRMM,Astrln Geod '66*51",
 		dst:      &RMM{},
 		want: &RMM{
+			Type:     "PGRMM",
 			MapDatum: "Astrln Geod '66",
 			Checksum: 0x51,
 		},
@@ -514,6 +550,7 @@ var parseTests = []struct {
 		sentence: "$PGRMM,NAD27 Canada*2F",
 		dst:      &RMM{},
 		want: &RMM{
+			Type:     "PGRMM",
 			MapDatum: "NAD27 Canada",
 			Checksum: 0x2f,
 		},
@@ -522,6 +559,7 @@ var parseTests = []struct {
 		sentence: "$PGRMZ,246,f,3*1B",
 		dst:      &RMZ{},
 		want: &RMZ{
+			Type:                  "PGRMZ",
 			Altitude:              246,
 			PositionFixDimensions: 3,
 			Checksum:              0x1b},
@@ -530,6 +568,7 @@ var parseTests = []struct {
 		sentence: "$PGRMZ,93,f,3*21",
 		dst:      &RMZ{},
 		want: &RMZ{
+			Type:                  "PGRMZ",
 			Altitude:              93,
 			PositionFixDimensions: 3,
 			Checksum:              0x21},
@@ -538,6 +577,7 @@ var parseTests = []struct {
 		sentence: "$PGRMZ,201,f,3*18",
 		dst:      &RMZ{},
 		want: &RMZ{
+			Type:                  "PGRMZ",
 			Altitude:              201,
 			PositionFixDimensions: 3,
 			Checksum:              0x18},
@@ -546,6 +586,7 @@ var parseTests = []struct {
 		sentence: "$PSLIB,,,J*22",
 		dst:      &LIB{},
 		want: &LIB{
+			Type:        "PSLIB",
 			RequestType: "J",
 			Checksum:    0x22},
 	},
@@ -553,6 +594,7 @@ var parseTests = []struct {
 		sentence: "$PSLIB,,,K*23",
 		dst:      &LIB{},
 		want: &LIB{
+			Type:        "PSLIB",
 			RequestType: "K",
 			Checksum:    0x23},
 	},
@@ -560,6 +602,7 @@ var parseTests = []struct {
 		sentence: "$PSLIB,320.0,200*59",
 		dst:      &LIB{},
 		want: &LIB{
+			Type:      "PSLIB",
 			Frequency: 320,
 			BitRate:   200,
 			Checksum:  0x59},

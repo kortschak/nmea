@@ -21,7 +21,7 @@ var (
 	errNotPointer  = errors.New("nmea: destination not a pointer")
 	errNotStruct   = errors.New("nmea: destination is not a struct")
 	errType        = errors.New("nmea: wrong type for method")
-	errExtraType   = errors.New("nmea: extra type field")
+	errLateType    = errors.New("nmea: late type field")
 	errMissingType = errors.New("nmea: missing type field")
 )
 
@@ -73,6 +73,20 @@ func ParseTo(dst interface{}, sentence string) error {
 			continue
 		}
 
+		if rt.Field(i).Name == "Type" {
+			if i != 0 {
+				return errLateType
+			}
+			if tag != fields[i] {
+				return errType
+			}
+			hasType = true
+			if f.Kind() == reflect.String {
+				f.SetString(fields[i])
+			}
+			continue
+		}
+
 		switch tag {
 		default:
 			if i >= len(fields) {
@@ -82,15 +96,6 @@ func ParseTo(dst interface{}, sentence string) error {
 			if err != nil {
 				return err
 			}
-		case "type":
-			if i != 0 {
-				return errExtraType
-			}
-			name := strings.ToUpper(rt.Field(i).Name)
-			if name != fields[i] {
-				return errType
-			}
-			hasType = true
 		case "checksum":
 			switch f.Kind() {
 			default:

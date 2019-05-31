@@ -8,7 +8,7 @@ import "time"
 
 // http://aprs.gids.nl/nmea/#bod
 type BOD struct {
-	GPBOD string `nmea:"type"`
+	Type string `nmea:"GPBOD"`
 
 	True        float64 `nmea:"number"`
 	_           [0]byte
@@ -22,7 +22,7 @@ type BOD struct {
 
 // http://aprs.gids.nl/nmea/#bwc
 type BWC struct {
-	GPBWC string `nmea:"type"`
+	Type string `nmea:"GPBWC"`
 
 	Timestamp  time.Time `nmea:"time"`
 	Latitude   float64   `nmea:"latlon"`
@@ -42,7 +42,7 @@ type BWC struct {
 
 // http://aprs.gids.nl/nmea/#gll
 type GLL struct {
-	GPGLL string `nmea:"type"`
+	Type string `nmea:"GPGLL"`
 
 	Latitude   float64   `nmea:"latlon"`
 	NorthSouth string    `nmea:"string"`
@@ -55,7 +55,7 @@ type GLL struct {
 
 // http://aprs.gids.nl/nmea/#gga
 type GGA struct {
-	GPGGA string `nmea:"type"`
+	Type string `nmea:"GPGGA"`
 
 	Timestamp  time.Time `nmea:"time"`
 	Latitude   float64   `nmea:"latlon"`
@@ -81,7 +81,7 @@ type GGA struct {
 
 // http://aprs.gids.nl/nmea/#gsa
 type GSA struct {
-	GPGSA string `nmea:"type"`
+	Type string `nmea:"GPGSA"`
 
 	Mode string `nmea:"string"`
 	Fix  int    `nmea:"number"`
@@ -108,7 +108,7 @@ type GSA struct {
 
 // http://aprs.gids.nl/nmea/#gsv
 type GSV struct {
-	GPGSV string `nmea:"type"`
+	Type string `nmea:"GPGSV"`
 
 	Messages      int `nmea:"number"`
 	MessageNumber int `nmea:"number"`
@@ -140,7 +140,7 @@ type GSV struct {
 
 // http://aprs.gids.nl/nmea/#hdt
 type HDT struct {
-	GPHDT string `nmea:"type"`
+	Type string `nmea:"GPHDT"`
 
 	Heading float64 `nmea:"number"`
 	_       [0]byte
@@ -150,7 +150,7 @@ type HDT struct {
 
 // http://aprs.gids.nl/nmea/#r00
 type R00 struct {
-	GPR00 string `nmea:"type"`
+	Type string `nmea:"GPR00"`
 
 	WP0  string `nmea:"string"`
 	WP1  string `nmea:"string"`
@@ -171,7 +171,7 @@ type R00 struct {
 
 // http://aprs.gids.nl/nmea/#rma
 type RMA struct {
-	GPRMA string `nmea:"type"`
+	Type string `nmea:"GPRMA"`
 
 	Status string `nmea:"string"`
 
@@ -192,7 +192,7 @@ type RMA struct {
 
 // http://aprs.gids.nl/nmea/#rmb
 type RMB struct {
-	GPRMB string `nmea:"type"`
+	Type string `nmea:"GPRMB"`
 
 	Status string `nmea:"string"`
 
@@ -218,7 +218,7 @@ type RMB struct {
 
 // http://aprs.gids.nl/nmea/#rmc
 type RMC struct {
-	GPRMC string `nmea:"type"`
+	Type string `nmea:"GPRMC"`
 
 	Time time.Time `nmea:"time"`
 
@@ -257,7 +257,7 @@ type RMC struct {
 
 // http://aprs.gids.nl/nmea/#trf
 type TRF struct {
-	GPTRF string `nmea:"type"`
+	Type string `nmea:"GPTRF"`
 
 	Time time.Time `nmea:"time"`
 	Date time.Time `nmea:"date"`
@@ -277,14 +277,14 @@ type TRF struct {
 
 // http://aprs.gids.nl/nmea/#stn
 type STN struct {
-	GPSTN string `nmea:"type"`
+	Type string `nmea:"GPSTN"`
 
 	Talker byte `nmea:"number"`
 }
 
 // http://aprs.gids.nl/nmea/#vbw
 type VBW struct {
-	GPVBW string `nmea:"type"`
+	Type string `nmea:"GPVBW"`
 
 	LongitudinalWaterSpeed float64 `nmea:"number"`
 	TransverseWaterSpeed   float64 `nmea:"number"`
@@ -297,7 +297,7 @@ type VBW struct {
 
 // http://aprs.gids.nl/nmea/#vtg
 type VTG struct {
-	GPVTG string `nmea:"type"`
+	Type string `nmea:"GPVTG"`
 
 	TrackTrue     float64 `nmea:"number"`
 	_             [0]byte
@@ -313,7 +313,7 @@ type VTG struct {
 
 // http://aprs.gids.nl/nmea/#wpl
 type WPL struct {
-	GPWPL string `nmea:"type"`
+	Type string `nmea:"GPWPL"`
 
 	Latitude   float64 `nmea:"latlon"`
 	NorthSouth string  `nmea:"string"`
@@ -327,7 +327,7 @@ type WPL struct {
 
 // http://aprs.gids.nl/nmea/#xte
 type XTE struct {
-	GPXTE string `nmea:"type"`
+	Type string `nmea:"GPXTE"`
 
 	GeneralWarning string `nmea:"string"`
 	LockFlag       string `nmea:"string"`
@@ -341,7 +341,7 @@ type XTE struct {
 
 // http://aprs.gids.nl/nmea/#zda
 type ZDA struct {
-	GPZDA string `nmea:"type"`
+	Type string `nmea:"GPZDA"`
 
 	Time            time.Time `nmea:"time"`
 	Day             byte      `nmea:"number"`
@@ -353,7 +353,7 @@ type ZDA struct {
 
 // http://aprs.gids.nl/nmea/#rme
 type RME struct {
-	PGRME string `nmea:"type"`
+	Type string `nmea:"PGRME"`
 
 	HPE   float64 `nmea:"number"`
 	_     [0]byte
@@ -367,7 +367,7 @@ type RME struct {
 
 // http://aprs.gids.nl/nmea/#rmm
 type RMM struct {
-	PGRMM string `nmea:"type"`
+	Type string `nmea:"PGRMM"`
 
 	MapDatum string `nmea:"string"`
 
@@ -376,7 +376,7 @@ type RMM struct {
 
 // http://aprs.gids.nl/nmea/#rmz
 type RMZ struct {
-	PGRMZ string `nmea:"type"`
+	Type string `nmea:"PGRMZ"`
 
 	Altitude              float64 `nmea:"number"`
 	_                     [0]byte
@@ -387,7 +387,7 @@ type RMZ struct {
 
 // http://aprs.gids.nl/nmea/#lib
 type LIB struct {
-	PSLIB string `nmea:"type"`
+	Type string `nmea:"PSLIB"`
 
 	Frequency   float64 `nmea:"number"`
 	BitRate     float64 `nmea:"number"`
