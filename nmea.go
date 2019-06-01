@@ -11,19 +11,21 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 )
 
 var (
-	errTooShort    = errors.New("nmea: sentence is too short")
-	errNoSigil     = errors.New("nmea: no initial sentence sigil")
-	errChecksum    = errors.New("nmea: checksum mismatch")
-	errNotPointer  = errors.New("nmea: destination not a pointer")
-	errNotStruct   = errors.New("nmea: destination is not a struct")
-	errType        = errors.New("nmea: wrong type for method")
-	errLateType    = errors.New("nmea: late type field")
-	errMissingType = errors.New("nmea: missing type field")
-	errTypeSyntax  = errors.New("nmea: bad syntax for type match")
+	errTooShort      = errors.New("nmea: sentence is too short")
+	errNoSigil       = errors.New("nmea: no initial sentence sigil")
+	errChecksum      = errors.New("nmea: checksum mismatch")
+	errNotPointer    = errors.New("nmea: destination not a pointer")
+	errNotStruct     = errors.New("nmea: destination is not a struct")
+	errType          = errors.New("nmea: wrong type for method")
+	errLateType      = errors.New("nmea: late type field")
+	errMissingType   = errors.New("nmea: missing type field")
+	errTypeSyntax    = errors.New("nmea: bad syntax for type match")
+	errNotRegistered = errors.New("nmea: sentence type not registered")
 )
 
 // ParseTo parses a raw NMEA 0183 sentence and fills the fields of dst with the
@@ -61,9 +63,145 @@ func ParseTo(dst interface{}, sentence string) error {
 	if rv.Kind() != reflect.Struct {
 		return errNotStruct
 	}
-	rt := rv.Type()
+
+	return parseTo(rv, strings.Split(sentence, ","), sum)
+}
+
+// Register registers the NMEA 0183 type to be parsed into the given
+// destination type, dst. The kind of dst must be a struct, otherwise
+// Register will panic. Calling Register with an already registered
+// type will overwrite the existing registration. If dst is nil, the
+// type will be deregistered.
+//
+// The following types are registered by default:
+//
+//  - "AIVDM": VDMVDO{}
+//  - "AIVDO": VDMVDO{}
+//  - "GLGNS": GNS{}
+//  - "GNGNS": GNS{}
+//  - "GPBOD": BOD{}
+//  - "GPBWC": BWC{}
+//  - "GPGGA": GGA{}
+//  - "GPGLL": GLL{}
+//  - "GPGNS": GNS{}
+//  - "GPGSA": GSA{}
+//  - "GPGSV": GSV{}
+//  - "GPHDT": HDT{}
+//  - "GPR00": R00{}
+//  - "GPRMA": RMA{}
+//  - "GPRMB": RMB{}
+//  - "GPRMC": RMC{}
+//  - "GPSTN": STN{}
+//  - "GPTHS": THS{}
+//  - "GPTRF": TRF{}
+//  - "GPVBW": VBW{}
+//  - "GPVTG": VTG{}
+//  - "GPWPL": WPL{}
+//  - "GPXTE": XTE{}
+//  - "GPZDA": ZDA{}
+//  - "PGRME": RME{}
+//  - "PGRMM": RMM{}
+//  - "PGRMZ": RMZ{}
+//  - "PSLIB": LIB{}
+//
+func Register(typ string, dst interface{}) {
+	if dst == nil {
+		registryLock.Lock()
+		delete(registry, typ)
+		registryLock.Unlock()
+		return
+	}
+	if reflect.TypeOf(dst).Kind() != reflect.Struct {
+		panic(errNotStruct)
+	}
+	registryLock.Lock()
+	registry[typ] = dst
+	registryLock.Unlock()
+}
+
+var (
+	registryLock sync.RWMutex
+	registry     = map[string]interface{}{
+		"AIVDM": VDMVDO{},
+		"AIVDO": VDMVDO{},
+		"GLGNS": GNS{},
+		"GNGNS": GNS{},
+		"GPBOD": BOD{},
+		"GPBWC": BWC{},
+		"GPGGA": GGA{},
+		"GPGLL": GLL{},
+		"GPGNS": GNS{},
+		"GPGSA": GSA{},
+		"GPGSV": GSV{},
+		"GPHDT": HDT{},
+		"GPR00": R00{},
+		"GPRMA": RMA{},
+		"GPRMB": RMB{},
+		"GPRMC": RMC{},
+		"GPSTN": STN{},
+		"GPTHS": THS{},
+		"GPTRF": TRF{},
+		"GPVBW": VBW{},
+		"GPVTG": VTG{},
+		"GPWPL": WPL{},
+		"GPXTE": XTE{},
+		"GPZDA": ZDA{},
+		"PGRME": RME{},
+		"PGRMM": RMM{},
+		"PGRMZ": RMZ{},
+		"PSLIB": LIB{},
+	}
+)
+
+// Parse parses a raw NMEA 0183 sentence and fills the fields of a destination
+// registered struct with the data contained within the sentence and returns it.
+// If the sentence has a checksum it is compared with the checksum of the
+// sentence's bytes.
+func Parse(sentence string) (interface{}, error) {
+	switch {
+	case len(sentence) < 6: // [!$].{5}
+		return nil, errTooShort
+	case sentence[0] != '$' && sentence[0] != '!':
+		return nil, errNoSigil
+	}
+	sentence = sentence[1:]
+
+	var sum int64
+	if sumMarkIdx := strings.Index(sentence, "*"); sumMarkIdx != -1 {
+		wantSum, err := strconv.ParseInt(sentence[sumMarkIdx+1:], 16, 8)
+		if err != nil {
+			return nil, err
+		}
+		sentence = sentence[:sumMarkIdx]
+		if checksum(sentence) != wantSum {
+			return nil, errChecksum
+		}
+		sum = wantSum
+	}
 
 	fields := strings.Split(sentence, ",")
+
+	registryLock.RLock()
+	dst, ok := registry[fields[0]]
+	registryLock.RUnlock()
+	if !ok {
+		return nil, errNotRegistered
+	}
+
+	typ := reflect.TypeOf(dst)
+	if typ.Kind() != reflect.Struct {
+		return nil, errNotStruct
+	}
+	rv := reflect.New(typ).Elem()
+	err := parseTo(rv, fields, sum)
+	if err != nil {
+		return nil, err
+	}
+	return rv.Interface(), nil
+}
+
+func parseTo(rv reflect.Value, fields []string, sum int64) error {
+	rt := rv.Type()
 
 	var hasType bool
 	for i := 0; i < rv.NumField(); i++ {

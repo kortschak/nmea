@@ -650,13 +650,13 @@ var parseTests = []struct {
 		},
 	},
 	{
-		sentence: "$--THS,1.2,A*23",
+		sentence: "$GPTHS,1.2,A*34",
 		dst:      &THS{},
 		want: &THS{
-			Type:     "--THS",
+			Type:     "GPTHS",
 			Heading:  1.2,
 			Status:   "A",
-			Checksum: 0x23,
+			Checksum: 0x34,
 		},
 	},
 	{
@@ -710,6 +710,19 @@ func TestParseTo(t *testing.T) {
 		}
 		if !reflect.DeepEqual(test.dst, test.want) {
 			t.Errorf("expected result:\ngot: %#v\nwant:%#v", test.dst, test.want)
+		}
+	}
+}
+
+func TestParse(t *testing.T) {
+	for _, test := range parseTests {
+		got, err := Parse(test.sentence)
+		if err != nil {
+			t.Errorf("unexpected error: %v", err)
+		}
+		want := reflect.ValueOf(test.want).Elem().Interface()
+		if !reflect.DeepEqual(got, want) {
+			t.Errorf("expected result:\ngot: %#v\nwant:%#v", got, want)
 		}
 	}
 }
