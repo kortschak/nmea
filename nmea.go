@@ -26,6 +26,7 @@ var (
 	errMissingType   = errors.New("nmea: missing type field")
 	errTypeSyntax    = errors.New("nmea: bad syntax for type match")
 	errNotRegistered = errors.New("nmea: sentence type not registered")
+	errBadBinary     = errors.New("nmea: invalid binary data encoding")
 )
 
 // ParseTo parses a raw NMEA 0183 sentence and fills the fields of dst with the
@@ -419,4 +420,49 @@ func setTime(dst reflect.Value, field string) error {
 	}
 	dst.Set(reflect.ValueOf(t))
 	return nil
+}
+
+// DeArmorAIS returns 6-bit-nibble payload data extracted from AIS
+// ASCII armoring. Each byte of the returned byte slice as a single
+// 6-bit value.
+//
+// See https://gpsd.gitlab.io/gpsd/AIVDM.html#_aivdm_aivdo_payload_armoring
+func DeArmorAIS(data string) ([]byte, error) {
+	if data == "" {
+		return nil, nil
+	}
+	dst := make([]byte, len(data))
+	for i, b := range []byte(data) {
+		if b < '0' || 'w' < b || ('X' <= b && b <= '_') {
+			return dst, errBadBinary
+		}
+
+		v := b - '0'
+		if v > 40 { // We are in ['X', '_'].
+			v -= 8
+		}
+
+		dst[i] = v
+	}
+
+	return dst, nil
+}
+
+// SixBitToASCII returns the ASCII value corresponding to an AIS Sixbit
+// ASCII-encoded character. If b6 is greater than 63, SixBitASCII will
+// panic.
+//
+// See https://gpsd.gitlab.io/gpsd/AIVDM.html#_ais_payload_data_types
+func SixBitToASCII(b6 byte) byte {
+	if b6 > 63 {
+		panic("nmea: six bit ascii overflow")
+	}
+	return asciiFor[b6]
+}
+
+var asciiFor = [64]byte{
+	'@', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O',
+	'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '[', '\\', ']', '^', '_',
+	' ', '!', '"', '#', '$', '%', '&', '\'', '(', ')', '*', '+', ',', '-', '.', '/',
+	'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ':', ';', '<', '=', '>', '?',
 }

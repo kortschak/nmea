@@ -5,6 +5,7 @@
 package nmea
 
 import (
+	"bytes"
 	"reflect"
 	"testing"
 	"time"
@@ -709,7 +710,7 @@ func TestParseTo(t *testing.T) {
 			t.Errorf("unexpected error: %v", err)
 		}
 		if !reflect.DeepEqual(test.dst, test.want) {
-			t.Errorf("expected result:\ngot: %#v\nwant:%#v", test.dst, test.want)
+			t.Errorf("unexpected result:\ngot: %#v\nwant:%#v", test.dst, test.want)
 		}
 	}
 }
@@ -722,7 +723,57 @@ func TestParse(t *testing.T) {
 		}
 		want := reflect.ValueOf(test.want).Elem().Interface()
 		if !reflect.DeepEqual(got, want) {
-			t.Errorf("expected result:\ngot: %#v\nwant:%#v", got, want)
+			t.Errorf("unexpected result:\ngot: %#v\nwant:%#v", got, want)
+		}
+	}
+}
+
+var aisArmorTests = []struct {
+	payload string
+	want    []byte
+}{
+	{
+		payload: "",
+		want:    nil,
+	},
+	{
+		payload: "177KQJ5000G?tO`K>RA1wUbN0TKH",
+		want: []byte{
+			0x01, 0x07, 0x07, 0x1b, 0x21, 0x1a, 0x05, 0x00,
+			0x00, 0x00, 0x17, 0x0f, 0x3c, 0x1f, 0x28, 0x1b,
+			0x0e, 0x22, 0x11, 0x01, 0x3f, 0x25, 0x2a, 0x1e,
+			0x00, 0x24, 0x1b, 0x18,
+		},
+	},
+	{
+		payload: "55P5TL01VIaAL@7WKO@mBplU@<PDhh000000001S;AJ::4A80?4i@E53",
+		want: []byte{
+			0x05, 0x05, 0x20, 0x05, 0x24, 0x1c, 0x00, 0x01,
+			0x26, 0x19, 0x29, 0x11, 0x1c, 0x10, 0x07, 0x27,
+			0x1b, 0x1f, 0x10, 0x35, 0x12, 0x38, 0x34, 0x25,
+			0x10, 0x0c, 0x20, 0x14, 0x30, 0x30, 0x00, 0x00,
+			0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x23,
+			0x0b, 0x11, 0x1a, 0x0a, 0x0a, 0x04, 0x11, 0x08,
+			0x00, 0x0f, 0x04, 0x31, 0x10, 0x15, 0x05, 0x03,
+		},
+	},
+	{
+		payload: "1@0000000000000",
+		want: []byte{
+			0x01, 0x10, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+			0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		},
+	},
+}
+
+func TestDeArmorAIS(t *testing.T) {
+	for _, test := range aisArmorTests {
+		got, err := DeArmorAIS(test.payload)
+		if err != nil {
+			t.Errorf("unexpected error: %v", err)
+		}
+		if !bytes.Equal(got, test.want) {
+			t.Errorf("unexpected result:\ngot: %#v\nwant:%#v", got, test.want)
 		}
 	}
 }

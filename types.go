@@ -430,8 +430,6 @@ type THS struct {
 	Checksum byte `nmea:"checksum"`
 }
 
-// TODO(kortschak): Complete implementation of VDM/VDO
-
 // https://gpsd.gitlab.io/gpsd/AIVDM.html
 type VDMVDO struct {
 	Type string `nmea:"/..VD[MO]/"`
@@ -443,6 +441,7 @@ type VDMVDO struct {
 
 	ChannelCode string `nmea:"string"`
 
+	// Data is AIS ASCII-armored.
 	Data    string `nmea:"string"`
 	Padding byte   `nmea:"number"`
 
