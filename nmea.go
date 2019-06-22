@@ -7,6 +7,7 @@ package nmea
 import (
 	"errors"
 	"math"
+	"math/big"
 	"reflect"
 	"regexp"
 	"strconv"
@@ -465,4 +466,37 @@ var asciiFor = [64]byte{
 	'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '[', '\\', ']', '^', '_',
 	' ', '!', '"', '#', '$', '%', '&', '\'', '(', ')', '*', '+', ',', '-', '.', '/',
 	'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ':', ';', '<', '=', '>', '?',
+}
+
+// AISBitField returns an 8-bit packed byte slice holding the bits
+// of an AIS 6-bit nibble slice, starting from bit s and extending to
+// the bit before e. The resulting byte slice will be shifted such that
+// the last bit of the 6-bit nibble slice will be the lowest significance
+// bit of the returned value. If s or e are outside the length of the 6-bit
+// bit slice, AISBitField will panic.
+func AISBitField(b6 []byte, s, e int) []byte {
+	if s < 0 || e < 0 || e < s {
+		panic("nmea: bitfield index out of bounds")
+	}
+	if s == e {
+		return nil
+	}
+	if ew, _ := bitAddr(s); ew > len(b6) {
+		panic("nmea: bitfield index out of bounds")
+	}
+
+	var bits big.Int
+	for i := s; i < e; i++ {
+		w, b := bitAddr(i)
+		bits.SetBit(&bits, e-(i-s)-1, uint(b6[w]&(1<<b))>>b)
+	}
+	padding := uint((6 - ((e - s) % 6)) % 6)
+	bits.Rsh(&bits, padding)
+	return bits.Bytes()
+}
+
+func bitAddr(i int) (w int, b uint) {
+	w = i / 6
+	b = 5 - uint(i)%6
+	return w, b
 }
