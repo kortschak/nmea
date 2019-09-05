@@ -66,6 +66,8 @@ type GGA struct {
 	Quality    int `nmea:"number"`
 	Satellites int `nmea:"number"`
 
+	HDOP float64 `nmea:"number"`
+
 	Altitude     float64 `nmea:"number"`
 	AltitudeUnit string  `nmea:"string"`
 
