@@ -17,17 +17,17 @@ import (
 )
 
 var (
-	errTooShort      = errors.New("nmea: sentence is too short")
-	errNoSigil       = errors.New("nmea: no initial sentence sigil")
-	errChecksum      = errors.New("nmea: checksum mismatch")
-	errNotPointer    = errors.New("nmea: destination not a pointer")
-	errNotStruct     = errors.New("nmea: destination is not a struct")
-	errType          = errors.New("nmea: wrong type for method")
-	errLateType      = errors.New("nmea: late type field")
-	errMissingType   = errors.New("nmea: missing type field")
-	errTypeSyntax    = errors.New("nmea: bad syntax for type match")
-	errNotRegistered = errors.New("nmea: sentence type not registered")
-	errBadBinary     = errors.New("nmea: invalid binary data encoding")
+	ErrTooShort      = errors.New("nmea: sentence is too short")
+	ErrNoSigil       = errors.New("nmea: no initial sentence sigil")
+	ErrChecksum      = errors.New("nmea: checksum mismatch")
+	ErrNotPointer    = errors.New("nmea: destination not a pointer")
+	ErrNotStruct     = errors.New("nmea: destination is not a struct")
+	ErrType          = errors.New("nmea: wrong type for method")
+	ErrLateType      = errors.New("nmea: late type field")
+	ErrMissingType   = errors.New("nmea: missing type field")
+	ErrTypeSyntax    = errors.New("nmea: bad syntax for type match")
+	ErrNotRegistered = errors.New("nmea: sentence type not registered")
+	ErrBadBinary     = errors.New("nmea: invalid binary data encoding")
 )
 
 // ParseTo parses a raw NMEA 0183 sentence and fills the fields of dst with the
@@ -38,9 +38,9 @@ var (
 func ParseTo(dst interface{}, sentence string) error {
 	switch {
 	case len(sentence) < 6: // [!$].{5}
-		return errTooShort
+		return ErrTooShort
 	case sentence[0] != '$' && sentence[0] != '!':
-		return errNoSigil
+		return ErrNoSigil
 	}
 	sentence = sentence[1:]
 
@@ -57,16 +57,16 @@ func ParseTo(dst interface{}, sentence string) error {
 
 	rv := reflect.ValueOf(dst)
 	if rv.Kind() != reflect.Ptr {
-		return errNotPointer
+		return ErrNotPointer
 	}
 	rv = rv.Elem()
 	if rv.Kind() != reflect.Struct {
-		return errNotStruct
+		return ErrNotStruct
 	}
 
 	err := parseTo(rv, strings.Split(sentence, ","), wantSum)
 	if sum != wantSum && err == nil {
-		return errChecksum
+		return ErrChecksum
 	}
 	return nil
 }
@@ -113,7 +113,7 @@ func Register(typ string, dst interface{}) {
 		return
 	}
 	if reflect.TypeOf(dst).Kind() != reflect.Struct {
-		panic(errNotStruct)
+		panic(ErrNotStruct)
 	}
 	registryLock.Lock()
 	registry[typ] = dst
@@ -159,9 +159,9 @@ var (
 func Parse(sentence string) (interface{}, error) {
 	switch {
 	case len(sentence) < 6: // [!$].{5}
-		return nil, errTooShort
+		return nil, ErrTooShort
 	case sentence[0] != '$' && sentence[0] != '!':
-		return nil, errNoSigil
+		return nil, ErrNoSigil
 	}
 	sentence = sentence[1:]
 
@@ -182,12 +182,12 @@ func Parse(sentence string) (interface{}, error) {
 	dst, ok := registry[fields[0]]
 	registryLock.RUnlock()
 	if !ok {
-		return nil, errNotRegistered
+		return nil, ErrNotRegistered
 	}
 
 	typ := reflect.TypeOf(dst)
 	if typ.Kind() != reflect.Struct {
-		return nil, errNotStruct
+		return nil, ErrNotStruct
 	}
 	rv := reflect.New(typ).Elem()
 	err := parseTo(rv, fields, wantSum)
@@ -195,7 +195,7 @@ func Parse(sentence string) (interface{}, error) {
 		return nil, err
 	}
 	if sum != wantSum {
-		err = errChecksum
+		err = ErrChecksum
 	}
 	return rv.Interface(), err
 }
@@ -213,21 +213,21 @@ func parseTo(rv reflect.Value, fields []string, sum int64) error {
 
 		if rt.Field(i).Name == "Type" {
 			if i != 0 {
-				return errLateType
+				return ErrLateType
 			}
 			if tag[0] == '/' {
 				if tag[len(tag)-1] != '/' {
-					return errTypeSyntax
+					return ErrTypeSyntax
 				}
 				re, err := regexp.Compile(tag[1 : len(tag)-1])
 				if err != nil {
-					return errTypeSyntax
+					return ErrTypeSyntax
 				}
 				if !re.MatchString(fields[i]) {
-					return errType
+					return ErrType
 				}
 			} else if tag != fields[i] {
-				return errType
+				return ErrType
 			}
 			hasType = true
 			if f.Kind() == reflect.String {
@@ -248,7 +248,7 @@ func parseTo(rv reflect.Value, fields []string, sum int64) error {
 		case "checksum":
 			switch f.Kind() {
 			default:
-				return errType
+				return ErrType
 			case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 				f.SetInt(sum)
 			case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
@@ -258,7 +258,7 @@ func parseTo(rv reflect.Value, fields []string, sum int64) error {
 	}
 
 	if !hasType {
-		return errMissingType
+		return ErrMissingType
 	}
 	return nil
 }
@@ -283,7 +283,7 @@ var methodFor = map[string]func(dst reflect.Value, field string) error{
 func setNumber(dst reflect.Value, field string) error {
 	switch dst.Kind() {
 	default:
-		return errType
+		return ErrType
 	case reflect.Float32, reflect.Float64:
 		return setFloat(dst, field)
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64,
@@ -295,7 +295,7 @@ func setNumber(dst reflect.Value, field string) error {
 func setInteger(dst reflect.Value, field string) error {
 	switch kind := dst.Kind(); kind {
 	default:
-		return errType
+		return ErrType
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 		if len(field) == 0 {
 			dst.SetInt(0)
@@ -336,7 +336,7 @@ var sizeOf = [...]int{
 func setFloat(dst reflect.Value, field string) error {
 	switch dst.Kind() {
 	default:
-		return errType
+		return ErrType
 	case reflect.Float64:
 		if len(field) == 0 {
 			dst.SetFloat(0)
@@ -364,7 +364,7 @@ func setFloat(dst reflect.Value, field string) error {
 func setLatLon(dst reflect.Value, field string) error {
 	switch dst.Kind() {
 	default:
-		return errType
+		return ErrType
 	case reflect.Float64, reflect.Float32:
 		if len(field) == 0 {
 			dst.SetFloat(0)
@@ -383,12 +383,12 @@ func setLatLon(dst reflect.Value, field string) error {
 func setString(dst reflect.Value, field string) error {
 	switch dst.Kind() {
 	default:
-		return errType
+		return ErrType
 	case reflect.String:
 		dst.SetString(field)
 	case reflect.Slice:
 		if dst.Type().Elem().Kind() != reflect.Uint8 {
-			return errType
+			return ErrType
 		}
 		dst.SetBytes([]byte(field))
 	}
@@ -399,7 +399,7 @@ var timeType = reflect.TypeOf(time.Time{})
 
 func setDate(dst reflect.Value, field string) error {
 	if dst.Type() != timeType {
-		return errType
+		return ErrType
 	}
 	t, err := time.ParseInLocation("020106", field, time.UTC)
 	if err != nil {
@@ -411,7 +411,7 @@ func setDate(dst reflect.Value, field string) error {
 
 func setTime(dst reflect.Value, field string) error {
 	if dst.Type() != timeType {
-		return errType
+		return ErrType
 	}
 	t, err := time.ParseInLocation("150405", field, time.UTC)
 	if err != nil {
@@ -433,7 +433,7 @@ func DeArmorAIS(data string) ([]byte, error) {
 	dst := make([]byte, len(data))
 	for i, b := range []byte(data) {
 		if b < '0' || 'w' < b || ('X' <= b && b <= '_') {
-			return dst, errBadBinary
+			return dst, ErrBadBinary
 		}
 
 		v := b - '0'
