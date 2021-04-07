@@ -22,6 +22,7 @@ var (
 	ErrChecksum      = errors.New("nmea: checksum mismatch")
 	ErrNotPointer    = errors.New("nmea: destination not a pointer")
 	ErrNotStruct     = errors.New("nmea: destination is not a struct")
+	ErrNMEAType      = errors.New("nmea: wrong nmea type for sentence")
 	ErrType          = errors.New("nmea: wrong type for method")
 	ErrLateType      = errors.New("nmea: late type field")
 	ErrMissingType   = errors.New("nmea: missing type field")
@@ -65,10 +66,10 @@ func ParseTo(dst interface{}, sentence string) error {
 	}
 
 	err := parseTo(rv, strings.Split(sentence, ","), wantSum)
-	if sum != wantSum && err == nil {
+	if sum != wantSum {
 		return ErrChecksum
 	}
-	return nil
+	return err
 }
 
 // Register registers the NMEA 0183 type to be parsed into the given
@@ -191,9 +192,6 @@ func Parse(sentence string) (interface{}, error) {
 	}
 	rv := reflect.New(typ).Elem()
 	err := parseTo(rv, fields, wantSum)
-	if err != nil {
-		return nil, err
-	}
 	if sum != wantSum {
 		err = ErrChecksum
 	}
@@ -224,10 +222,12 @@ func parseTo(rv reflect.Value, fields []string, sum int64) error {
 					return ErrTypeSyntax
 				}
 				if !re.MatchString(fields[i]) {
-					return ErrType
+					f.SetString(fields[i])
+					return ErrNMEAType
 				}
 			} else if tag != fields[i] {
-				return ErrType
+				f.SetString(fields[i])
+				return ErrNMEAType
 			}
 			hasType = true
 			if f.Kind() == reflect.String {
