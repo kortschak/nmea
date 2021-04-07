@@ -77,28 +77,27 @@ func ParseTo(dst interface{}, sentence string) error {
 //
 // The following types are registered by default:
 //
-//  - "AIVDM": VDMVDO{}
-//  - "AIVDO": VDMVDO{}
-//  - "GLGNS": GNS{}, "GNGNS": GNS{}, "GPGNS": GNS{}
-//  - "GLBOD": BOD{}, "GNBOD": BOD{}, "GPBOD": BOD{}
-//  - "GLBWC": BWC{}, "GNBWC": BWC{}, "GPBWC": BWC{}
-//  - "GLGGA": GGA{}, "GNGGA": GGA{}, "GPGGA": GGA{}
-//  - "GLGLL": GLL{}, "GNGLL": GLL{}, "GPGLL": GLL{}
-//  - "GLGSA": GSA{}, "GNGSA": GSA{}, "GPGSA": GSA{}
-//  - "GLGSV": GSV{}, "GNGSV": GSV{}, "GPGSV": GSV{}
-//  - "GLHDT": HDT{}, "GNHDT": HDT{}, "GPHDT": HDT{}
-//  - "GLR00": R00{}, "GNR00": R00{}, "GPR00": R00{}
-//  - "GLRMA": RMA{}, "GNRMA": RMA{}, "GPRMA": RMA{}
-//  - "GLRMB": RMB{}, "GNRMB": RMB{}, "GPRMB": RMB{}
-//  - "GLRMC": RMC{}, "GNRMC": RMC{}, "GPRMC": RMC{}
-//  - "GLSTN": STN{}, "GNSTN": STN{}, "GPSTN": STN{}
-//  - "GLTHS": THS{}, "GNTHS": THS{}, "GPTHS": THS{}
-//  - "GLTRF": TRF{}, "GNTRF": TRF{}, "GPTRF": TRF{}
-//  - "GLVBW": VBW{}, "GNVBW": VBW{}, "GPVBW": VBW{}
-//  - "GLVTG": VTG{}, "GNVTG": VTG{}, "GPVTG": VTG{}
-//  - "GLWPL": WPL{}, "GNWPL": WPL{}, "GPWPL": WPL{}
-//  - "GLXTE": XTE{}, "GNXTE": XTE{}, "GPXTE": XTE{}
-//  - "GLZDA": ZDA{}, "GNZDA": ZDA{}, "GPZDA": ZDA{}
+//  - "AIVDM", "AIVDO": VDMVDO{}
+//  - "GLBOD", "GNBOD", "GPBOD": BOD{}
+//  - "GLBWC", "GNBWC", "GPBWC": BWC{}
+//  - "GLGGA", "GNGGA", "GPGGA": GGA{}
+//  - "GLGLL", "GNGLL", "GPGLL": GLL{}
+//  - "GLGNS", "GNGNS", "GPGNS": GNS{}
+//  - "GLGSA", "GNGSA", "GPGSA": GSA{}
+//  - "GLGSV", "GNGSV", "GPGSV": GSV{}
+//  - "GLHDT", "GNHDT", "GPHDT": HDT{}
+//  - "GLR00", "GNR00", "GPR00": R00{}
+//  - "GLRMA", "GNRMA", "GPRMA": RMA{}
+//  - "GLRMB", "GNRMB", "GPRMB": RMB{}
+//  - "GLRMC", "GNRMC", "GPRMC": RMC{}
+//  - "GLSTN", "GNSTN", "GPSTN": STN{}
+//  - "GLTHS", "GNTHS", "GPTHS": THS{}
+//  - "GLTRF", "GNTRF", "GPTRF": TRF{}
+//  - "GLVBW", "GNVBW", "GPVBW": VBW{}
+//  - "GLVTG", "GNVTG", "GPVTG": VTG{}
+//  - "GLWPL", "GNWPL", "GPWPL": WPL{}
+//  - "GLXTE", "GNXTE", "GPXTE": XTE{}
+//  - "GLZDA", "GNZDA", "GPZDA": ZDA{}
 //  - "PGRME": RME{}
 //  - "PGRMM": RMM{}
 //  - "PGRMZ": RMZ{}
