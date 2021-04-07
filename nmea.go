@@ -44,17 +44,15 @@ func ParseTo(dst interface{}, sentence string) error {
 	}
 	sentence = sentence[1:]
 
-	var sum int64
+	var sum, wantSum int64
 	if sumMarkIdx := strings.Index(sentence, "*"); sumMarkIdx != -1 {
-		wantSum, err := strconv.ParseInt(sentence[sumMarkIdx+1:], 16, 8)
+		var err error
+		wantSum, err = strconv.ParseInt(sentence[sumMarkIdx+1:], 16, 8)
 		if err != nil {
 			return err
 		}
 		sentence = sentence[:sumMarkIdx]
-		if checksum(sentence) != wantSum {
-			return errChecksum
-		}
-		sum = wantSum
+		sum = checksum(sentence)
 	}
 
 	rv := reflect.ValueOf(dst)
@@ -66,7 +64,11 @@ func ParseTo(dst interface{}, sentence string) error {
 		return errNotStruct
 	}
 
-	return parseTo(rv, strings.Split(sentence, ","), sum)
+	err := parseTo(rv, strings.Split(sentence, ","), wantSum)
+	if sum != wantSum && err == nil {
+		return errChecksum
+	}
+	return nil
 }
 
 // Register registers the NMEA 0183 type to be parsed into the given
@@ -163,17 +165,15 @@ func Parse(sentence string) (interface{}, error) {
 	}
 	sentence = sentence[1:]
 
-	var sum int64
+	var sum, wantSum int64
 	if sumMarkIdx := strings.Index(sentence, "*"); sumMarkIdx != -1 {
-		wantSum, err := strconv.ParseInt(sentence[sumMarkIdx+1:], 16, 8)
+		var err error
+		wantSum, err = strconv.ParseInt(sentence[sumMarkIdx+1:], 16, 8)
 		if err != nil {
 			return nil, err
 		}
 		sentence = sentence[:sumMarkIdx]
-		if checksum(sentence) != wantSum {
-			return nil, errChecksum
-		}
-		sum = wantSum
+		sum = checksum(sentence)
 	}
 
 	fields := strings.Split(sentence, ",")
@@ -190,11 +190,14 @@ func Parse(sentence string) (interface{}, error) {
 		return nil, errNotStruct
 	}
 	rv := reflect.New(typ).Elem()
-	err := parseTo(rv, fields, sum)
+	err := parseTo(rv, fields, wantSum)
 	if err != nil {
 		return nil, err
 	}
-	return rv.Interface(), nil
+	if sum != wantSum {
+		err = errChecksum
+	}
+	return rv.Interface(), err
 }
 
 func parseTo(rv reflect.Value, fields []string, sum int64) error {
