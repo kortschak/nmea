@@ -79,28 +79,26 @@ func ParseTo(dst interface{}, sentence string) error {
 //
 //  - "AIVDM": VDMVDO{}
 //  - "AIVDO": VDMVDO{}
-//  - "GLGNS": GNS{}
-//  - "GNGNS": GNS{}
-//  - "GPBOD": BOD{}
-//  - "GPBWC": BWC{}
-//  - "GPGGA": GGA{}
-//  - "GPGLL": GLL{}
-//  - "GPGNS": GNS{}
-//  - "GPGSA": GSA{}
-//  - "GPGSV": GSV{}
-//  - "GPHDT": HDT{}
-//  - "GPR00": R00{}
-//  - "GPRMA": RMA{}
-//  - "GPRMB": RMB{}
-//  - "GPRMC": RMC{}
-//  - "GPSTN": STN{}
-//  - "GPTHS": THS{}
-//  - "GPTRF": TRF{}
-//  - "GPVBW": VBW{}
-//  - "GPVTG": VTG{}
-//  - "GPWPL": WPL{}
-//  - "GPXTE": XTE{}
-//  - "GPZDA": ZDA{}
+//  - "GLGNS": GNS{}, "GNGNS": GNS{}, "GPGNS": GNS{}
+//  - "GLBOD": BOD{}, "GNBOD": BOD{}, "GPBOD": BOD{}
+//  - "GLBWC": BWC{}, "GNBWC": BWC{}, "GPBWC": BWC{}
+//  - "GLGGA": GGA{}, "GNGGA": GGA{}, "GPGGA": GGA{}
+//  - "GLGLL": GLL{}, "GNGLL": GLL{}, "GPGLL": GLL{}
+//  - "GLGSA": GSA{}, "GNGSA": GSA{}, "GPGSA": GSA{}
+//  - "GLGSV": GSV{}, "GNGSV": GSV{}, "GPGSV": GSV{}
+//  - "GLHDT": HDT{}, "GNHDT": HDT{}, "GPHDT": HDT{}
+//  - "GLR00": R00{}, "GNR00": R00{}, "GPR00": R00{}
+//  - "GLRMA": RMA{}, "GNRMA": RMA{}, "GPRMA": RMA{}
+//  - "GLRMB": RMB{}, "GNRMB": RMB{}, "GPRMB": RMB{}
+//  - "GLRMC": RMC{}, "GNRMC": RMC{}, "GPRMC": RMC{}
+//  - "GLSTN": STN{}, "GNSTN": STN{}, "GPSTN": STN{}
+//  - "GLTHS": THS{}, "GNTHS": THS{}, "GPTHS": THS{}
+//  - "GLTRF": TRF{}, "GNTRF": TRF{}, "GPTRF": TRF{}
+//  - "GLVBW": VBW{}, "GNVBW": VBW{}, "GPVBW": VBW{}
+//  - "GLVTG": VTG{}, "GNVTG": VTG{}, "GPVTG": VTG{}
+//  - "GLWPL": WPL{}, "GNWPL": WPL{}, "GPWPL": WPL{}
+//  - "GLXTE": XTE{}, "GNXTE": XTE{}, "GPXTE": XTE{}
+//  - "GLZDA": ZDA{}, "GNZDA": ZDA{}, "GPZDA": ZDA{}
 //  - "PGRME": RME{}
 //  - "PGRMM": RMM{}
 //  - "PGRMZ": RMZ{}
@@ -126,28 +124,26 @@ var (
 	registry     = map[string]interface{}{
 		"AIVDM": VDMVDO{},
 		"AIVDO": VDMVDO{},
-		"GLGNS": GNS{},
-		"GNGNS": GNS{},
-		"GPBOD": BOD{},
-		"GPBWC": BWC{},
-		"GPGGA": GGA{},
-		"GPGLL": GLL{},
-		"GPGNS": GNS{},
-		"GPGSA": GSA{},
-		"GPGSV": GSV{},
-		"GPHDT": HDT{},
-		"GPR00": R00{},
-		"GPRMA": RMA{},
-		"GPRMB": RMB{},
-		"GPRMC": RMC{},
-		"GPSTN": STN{},
-		"GPTHS": THS{},
-		"GPTRF": TRF{},
-		"GPVBW": VBW{},
-		"GPVTG": VTG{},
-		"GPWPL": WPL{},
-		"GPXTE": XTE{},
-		"GPZDA": ZDA{},
+		"GLGNS": GNS{}, "GNGNS": GNS{}, "GPGNS": GNS{},
+		"GLBOD": BOD{}, "GNBOD": BOD{}, "GPBOD": BOD{},
+		"GLBWC": BWC{}, "GNBWC": BWC{}, "GPBWC": BWC{},
+		"GLGGA": GGA{}, "GNGGA": GGA{}, "GPGGA": GGA{},
+		"GLGLL": GLL{}, "GNGLL": GLL{}, "GPGLL": GLL{},
+		"GLGSA": GSA{}, "GNGSA": GSA{}, "GPGSA": GSA{},
+		"GLGSV": GSV{}, "GNGSV": GSV{}, "GPGSV": GSV{},
+		"GLHDT": HDT{}, "GNHDT": HDT{}, "GPHDT": HDT{},
+		"GLR00": R00{}, "GNR00": R00{}, "GPR00": R00{},
+		"GLRMA": RMA{}, "GNRMA": RMA{}, "GPRMA": RMA{},
+		"GLRMB": RMB{}, "GNRMB": RMB{}, "GPRMB": RMB{},
+		"GLRMC": RMC{}, "GNRMC": RMC{}, "GPRMC": RMC{},
+		"GLSTN": STN{}, "GNSTN": STN{}, "GPSTN": STN{},
+		"GLTHS": THS{}, "GNTHS": THS{}, "GPTHS": THS{},
+		"GLTRF": TRF{}, "GNTRF": TRF{}, "GPTRF": TRF{},
+		"GLVBW": VBW{}, "GNVBW": VBW{}, "GPVBW": VBW{},
+		"GLVTG": VTG{}, "GNVTG": VTG{}, "GPVTG": VTG{},
+		"GLWPL": WPL{}, "GNWPL": WPL{}, "GPWPL": WPL{},
+		"GLXTE": XTE{}, "GNXTE": XTE{}, "GPXTE": XTE{},
+		"GLZDA": ZDA{}, "GNZDA": ZDA{}, "GPZDA": ZDA{},
 		"PGRME": RME{},
 		"PGRMM": RMM{},
 		"PGRMZ": RMZ{},
