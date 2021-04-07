@@ -8,7 +8,7 @@ import "time"
 
 // http://aprs.gids.nl/nmea/#bod
 type BOD struct {
-	Type string `nmea:"GPBOD"`
+	Type string `nmea:"/G[LNP]BOD/"`
 
 	True        float64 `nmea:"number"`
 	_           [0]byte
@@ -22,7 +22,7 @@ type BOD struct {
 
 // http://aprs.gids.nl/nmea/#bwc
 type BWC struct {
-	Type string `nmea:"GPBWC"`
+	Type string `nmea:"/G[LNP]BWC/"`
 
 	Timestamp  time.Time `nmea:"time"`
 	Latitude   float64   `nmea:"latlon"`
@@ -42,7 +42,7 @@ type BWC struct {
 
 // http://aprs.gids.nl/nmea/#gll
 type GLL struct {
-	Type string `nmea:"GPGLL"`
+	Type string `nmea:"/G[LNP]GLL/"`
 
 	Latitude   float64   `nmea:"latlon"`
 	NorthSouth string    `nmea:"string"`
@@ -55,7 +55,7 @@ type GLL struct {
 
 // http://aprs.gids.nl/nmea/#gga
 type GGA struct {
-	Type string `nmea:"GPGGA"`
+	Type string `nmea:"/G[LNP]GGA/"`
 
 	Timestamp  time.Time `nmea:"time"`
 	Latitude   float64   `nmea:"latlon"`
@@ -83,7 +83,7 @@ type GGA struct {
 
 // http://aprs.gids.nl/nmea/#gsa
 type GSA struct {
-	Type string `nmea:"GPGSA"`
+	Type string `nmea:"/G[LNP]GSA/"`
 
 	Mode string `nmea:"string"`
 	Fix  int    `nmea:"number"`
@@ -110,7 +110,7 @@ type GSA struct {
 
 // http://aprs.gids.nl/nmea/#gsv
 type GSV struct {
-	Type string `nmea:"GPGSV"`
+	Type string `nmea:"/G[LNP]GSV/"`
 
 	Messages      int `nmea:"number"`
 	MessageNumber int `nmea:"number"`
@@ -142,7 +142,7 @@ type GSV struct {
 
 // http://aprs.gids.nl/nmea/#hdt
 type HDT struct {
-	Type string `nmea:"GPHDT"`
+	Type string `nmea:"/G[LNP]HDT/"`
 
 	Heading float64 `nmea:"number"`
 	_       [0]byte
@@ -152,7 +152,7 @@ type HDT struct {
 
 // http://aprs.gids.nl/nmea/#r00
 type R00 struct {
-	Type string `nmea:"GPR00"`
+	Type string `nmea:"/G[LNP]R00/"`
 
 	WP0  string `nmea:"string"`
 	WP1  string `nmea:"string"`
@@ -173,7 +173,7 @@ type R00 struct {
 
 // http://aprs.gids.nl/nmea/#rma
 type RMA struct {
-	Type string `nmea:"GPRMA"`
+	Type string `nmea:"/G[LNP]RMA/"`
 
 	Status string `nmea:"string"`
 
@@ -194,7 +194,7 @@ type RMA struct {
 
 // http://aprs.gids.nl/nmea/#rmb
 type RMB struct {
-	Type string `nmea:"GPRMB"`
+	Type string `nmea:"/G[LNP]RMB/"`
 
 	Status string `nmea:"string"`
 
@@ -220,7 +220,7 @@ type RMB struct {
 
 // http://aprs.gids.nl/nmea/#rmc
 type RMC struct {
-	Type string `nmea:"GPRMC"`
+	Type string `nmea:"/G[LNP]RMC/"`
 
 	Time time.Time `nmea:"time"`
 
@@ -259,7 +259,7 @@ type RMC struct {
 
 // http://aprs.gids.nl/nmea/#trf
 type TRF struct {
-	Type string `nmea:"GPTRF"`
+	Type string `nmea:"/G[LNP]TRF/"`
 
 	Time time.Time `nmea:"time"`
 	Date time.Time `nmea:"date"`
@@ -279,14 +279,14 @@ type TRF struct {
 
 // http://aprs.gids.nl/nmea/#stn
 type STN struct {
-	Type string `nmea:"GPSTN"`
+	Type string `nmea:"/G[LNP]STN/"`
 
 	Talker byte `nmea:"number"`
 }
 
 // http://aprs.gids.nl/nmea/#vbw
 type VBW struct {
-	Type string `nmea:"GPVBW"`
+	Type string `nmea:"/G[LNP]VBW/"`
 
 	LongitudinalWaterSpeed float64 `nmea:"number"`
 	TransverseWaterSpeed   float64 `nmea:"number"`
@@ -299,7 +299,7 @@ type VBW struct {
 
 // http://aprs.gids.nl/nmea/#vtg
 type VTG struct {
-	Type string `nmea:"GPVTG"`
+	Type string `nmea:"/G[LNP]VTG/"`
 
 	TrackTrue     float64 `nmea:"number"`
 	_             [0]byte
@@ -315,7 +315,7 @@ type VTG struct {
 
 // http://aprs.gids.nl/nmea/#wpl
 type WPL struct {
-	Type string `nmea:"GPWPL"`
+	Type string `nmea:"/G[LNP]WPL/"`
 
 	Latitude   float64 `nmea:"latlon"`
 	NorthSouth string  `nmea:"string"`
@@ -329,7 +329,7 @@ type WPL struct {
 
 // http://aprs.gids.nl/nmea/#xte
 type XTE struct {
-	Type string `nmea:"GPXTE"`
+	Type string `nmea:"/G[LNP]XTE/"`
 
 	GeneralWarning string `nmea:"string"`
 	LockFlag       string `nmea:"string"`
@@ -343,7 +343,7 @@ type XTE struct {
 
 // http://aprs.gids.nl/nmea/#zda
 type ZDA struct {
-	Type string `nmea:"GPZDA"`
+	Type string `nmea:"/G[LNP]ZDA/"`
 
 	Time            time.Time `nmea:"time"`
 	Day             byte      `nmea:"number"`
@@ -400,7 +400,7 @@ type LIB struct {
 
 // https://www.trimble.com/oem_receiverhelp/v4.44/en/NMEA-0183messages_GNS.html
 type GNS struct {
-	Type string `nmea:"/G[NPL]GNS/"`
+	Type string `nmea:"/G[LNP]GNS/"`
 
 	Timestamp  time.Time `nmea:"time"`
 	Latitude   float64   `nmea:"latlon"`
